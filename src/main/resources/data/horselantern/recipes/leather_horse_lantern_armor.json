@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "minecraft:leather_horse_armor"
+    },
+    {
+      "item": "minecraft:lantern"
+    }
+  ],
+  "result": {
+    "item": "horselantern:leather_horse_lantern_armor"
+  }
+}

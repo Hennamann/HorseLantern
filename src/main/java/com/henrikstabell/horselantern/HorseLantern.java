@@ -1,15 +1,19 @@
 package com.henrikstabell.horselantern;
 
-import com.henrikstabell.horselantern.api.ILanternArmor;
+import com.henrikstabell.horselantern.api.IHorseLanternArmor;
 import com.henrikstabell.horselantern.block.HorseArmorLightBlock;
 import com.henrikstabell.horselantern.block.entity.HorseArmorLightBlockEntity;
+import com.henrikstabell.horselantern.integration.top.HorseLanternTOPIntegration;
 import com.henrikstabell.horselantern.item.DyeableHorseLanternArmorItem;
 import com.henrikstabell.horselantern.item.HorseLanternArmorItem;
+import net.minecraft.client.color.item.ItemColor;
+import net.minecraft.client.color.item.ItemColors;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.entity.animal.horse.AbstractHorse;
 import net.minecraft.world.entity.animal.horse.Horse;
 import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.DyeableLeatherItem;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -17,11 +21,17 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.material.Material;
+import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.ModList;
+import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -30,7 +40,7 @@ import org.apache.logging.log4j.Logger;
 public class HorseLantern {
 
     public static final String MODID = "horselantern";
-    private static final Logger LOGGER = LogManager.getLogger();
+    public static final Logger LOGGER = LogManager.getLogger();
 
     public static Item LEATHER_HORSE_LANTERN_ARMOR;
     public static Item IRON_HORSE_LANTERN_ARMOR;
@@ -42,9 +52,17 @@ public class HorseLantern {
 
     public HorseLantern() {
         MinecraftForge.EVENT_BUS.register(this);
+        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Configuration.CONFIG_SPEC);
     }
 
     @SubscribeEvent
+    public static void onInit(FMLClientSetupEvent event ) {
+        if (ModList.get().isLoaded("theoneprobe")) {
+            new HorseLanternTOPIntegration().setupTOPIntegration();
+        }
+    }
+
+    @SubscribeEvent()
     public static void onItemsRegistration(final RegistryEvent.Register<Item> itemRegisterEvent) {
         LEATHER_HORSE_LANTERN_ARMOR = new DyeableHorseLanternArmorItem(3, "leather", (new Item.Properties()).stacksTo(1).tab(CreativeModeTab.TAB_MISC)).setRegistryName("leather_horse_lantern_armor");
         itemRegisterEvent.getRegistry().register(LEATHER_HORSE_LANTERN_ARMOR);
@@ -56,13 +74,13 @@ public class HorseLantern {
         itemRegisterEvent.getRegistry().register(DIAMOND_HORSE_LANTERN_ARMOR);
     }
 
-    @SubscribeEvent
+    @SubscribeEvent()
     public static void onBlocksRegistration(final RegistryEvent.Register<Block> blockRegisterEvent) {
         HORSE_ARMOR_LIGHT_BLOCK = new HorseArmorLightBlock(BlockBehaviour.Properties.of(Material.AIR).strength(-1.0F, 3600000.8F).noDrops().noOcclusion().lightLevel(HorseArmorLightBlock.LIGHT_EMISSION)).setRegistryName(MODID, "horse_armor_light");
         blockRegisterEvent.getRegistry().register(HORSE_ARMOR_LIGHT_BLOCK);
     }
 
-    @SubscribeEvent
+    @SubscribeEvent()
     public static void onBlockEntityRegistration(RegistryEvent.Register<BlockEntityType<?>> event) {
         HORSE_ARMOR_LIGHT_BLOCK_ENTITYTYPE = BlockEntityType.Builder.of(HorseArmorLightBlockEntity::new, HORSE_ARMOR_LIGHT_BLOCK).build(null);
         HORSE_ARMOR_LIGHT_BLOCK_ENTITYTYPE.setRegistryName(MODID, "horse_armor_light");
@@ -72,14 +90,14 @@ public class HorseLantern {
     @SubscribeEvent
     public void onHorseUpdate(LivingEvent.LivingUpdateEvent event) {
         BlockState blockState = HORSE_ARMOR_LIGHT_BLOCK.defaultBlockState();
-        blockState.setValue(BlockStateProperties.LEVEL, 15);
+        blockState.setValue(BlockStateProperties.LEVEL, Configuration.getHorseArmorLightLevel());
 
         Level world = event.getEntityLiving().getCommandSenderWorld();
         BlockPos pos = event.getEntityLiving().eyeBlockPosition();
 
         if (event.getEntity() instanceof Horse) {
             if (((Horse) event.getEntityLiving()).isWearingArmor()) {
-                if (((Horse) event.getEntityLiving()).getArmor().getItem() instanceof ILanternArmor) {
+                if (((Horse) event.getEntityLiving()).getArmor().getItem() instanceof IHorseLanternArmor) {
                     world.setBlockAndUpdate(pos, blockState);
                 }
             }

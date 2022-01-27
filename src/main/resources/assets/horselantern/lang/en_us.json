@@ -1,7 +1,7 @@
 {
-  "item.horselantern.diamond_horse_lantern_armor": "Diamond Lantern Horse Armor",
-  "item.horselantern.iron_horse_lantern_armor": "Iron Lantern Horse Armor",
-  "item.horselantern.golden_horse_lantern_armor": "Golden Lantern Horse Armor",
-  "item.horselantern.leather_horse_lantern_armor": "Leather Lantern Horse Armor",
+  "item.horselantern.diamond_horse_lantern_armor": "Diamond Horse Lantern Armor",
+  "item.horselantern.iron_horse_lantern_armor": "Iron Horse Lantern Armor",
+  "item.horselantern.golden_horse_lantern_armor": "Golden Horse Lantern Armor",
+  "item.horselantern.leather_horse_lantern_armor": "Leather Horse Lantern Armor",
   "block.horselantern.horse_armor_light": "Horse Armor Light"
 }

@@ -28,6 +28,7 @@ displayName="Horse Lantern" #mandatory
 displayURL="https://www.curseforge.com/minecraft/mc-mods/horse-lantern" #optional
 # A file name (in the root of the mod JAR) containing a logo for display
 #logoFile="horselantern.png" #optional
+itemIcon="horselantern:diamond_horse_lantern_armor"
 # A text field displayed in the mod UI
 #credits="Thanks for this example mod goes to Java" #optional
 # A text field displayed in the mod UI
@@ -54,3 +55,5 @@ description='''Adds Horse Lanterns, emitting light while riding your horse. Maki
     versionRange="[1.18.1,1.19)"
     ordering="NONE"
     side="BOTH"
+[modproperties.horselantern]
+    configuredBackground="minecraft:textures/block/hay_block_side.png"

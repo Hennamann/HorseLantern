@@ -1,6 +1,7 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "minecraft:item/iron_horse_armor"
+    "layer0": "minecraft:item/iron_horse_armor",
+    "layer1": "horselantern:item/horse_lantern"
   }
 }

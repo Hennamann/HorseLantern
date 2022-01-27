@@ -2,14 +2,17 @@ buildscript {
     repositories {
         // These repositories are only for Gradle plugins, put any other repositories in the repository block further below
         maven { url = 'https://maven.minecraftforge.net' }
+        maven { url = 'https://repo.spongepowered.org/repository/maven-public/' }
         mavenCentral()
     }
     dependencies {
         classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
+        classpath 'org.spongepowered:mixingradle:0.7-SNAPSHOT'
     }
 }
 apply plugin: 'net.minecraftforge.gradle'
 // Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
+apply plugin: 'org.spongepowered.mixin'
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 
@@ -123,6 +126,7 @@ repositories {
     maven { url "https://maven.bai.lol" } // WTHIT
     maven { url "https://maven.tterrag.com/" } // TOP
     maven { url 'https://www.cursemaven.com' } // TOP etc…
+    maven { url "https://maven.shedaniel.me" } // Architectury, Roughly Enough Items
     }
 
 dependencies {
@@ -133,12 +137,17 @@ dependencies {
 
     compileOnly fg.deobf("mcp.mobius.waila:wthit-api:forge-${config.wthitVersion}")
     runtimeOnly fg.deobf("mcp.mobius.waila:wthit:forge-${config.wthitVersion}")
-
-    runtimeOnly fg.deobf("curse.maven:the-one-probe-245211:${config.topId}")
+    
+    implementation fg.deobf("curse.maven:the-one-probe-245211:${config.topId}")
 
     // For testing config compat.
     runtimeOnly fg.deobf("curse.maven:configured-457570:${config.configuredId}")
     runtimeOnly fg.deobf("curse.maven:catalogue-459701:${config.catalogueId}")
+
+    // REI, for utility
+    runtimeOnly fg.deobf("dev.architectury:architectury-forge:${config.architecturyVersion}")
+    runtimeOnly fg.deobf("me.shedaniel.cloth:cloth-config-forge:${config.clothConfigVersion}")
+    runtimeOnly fg.deobf("me.shedaniel:RoughlyEnoughItems-forge:${config.reiVersion}")
 
 }
 
@@ -152,7 +161,6 @@ def parseConfig(File config) {
 
 // Example for how to get properties into the manifest for reading at runtime.
 jar {
-    archiveClassifier.set("universal")
     manifest {
         attributes([
                 "Specification-Title"     : "horselantern",
@@ -195,9 +203,9 @@ task copyBuildXml(type: Copy) {
 
 // Example configuration to allow publishing using the maven-publish plugin
 // This is the preferred method to reobfuscate your jar file
-//jar.finalizedBy('reobfJar')
+jar.finalizedBy('reobfJar')
 // However if you are in a multi-project build, dev time needs unobfed jar files, so you can delay the obfuscation until publishing by doing
-publish.dependsOn('reobfJar')
+//publish.dependsOn('reobfJar')
 
 publishing {
     publications {
